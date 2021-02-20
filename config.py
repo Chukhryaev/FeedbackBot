@@ -1,0 +1,4 @@
+TOKEN = ""
+
+ADMIN_CHAT = 0
+
