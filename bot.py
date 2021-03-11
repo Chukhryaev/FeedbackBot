@@ -13,8 +13,15 @@ states = {
 }
 
 
-def get_file(message):
-	file_data = bot.get_file(message.photo[-1].file_id)
+def get_file(message, type):
+	file_data = None
+	print(message)
+	if type == "photo":
+		file_data = bot.get_file(message.photo[-1].file_id)
+	elif type == "video":
+		file_data = bot.get_file(message.video.file_id)
+	elif type == "document":
+		file_data = bot.get_file(message.document.file_id)
 	file = bot.download_file(file_data.file_path)
 	return file
 
@@ -34,13 +41,13 @@ def get_cancel_buttons():
 
 def user_logic(message):
 	if message.content_type == "photo":
-		bot.send_photo(config.ADMIN_CHAT, get_file(message), message.caption, reply_markup=get_answer_buttons(message))
+		bot.send_photo(config.ADMIN_CHAT, get_file(message, "photo"), message.caption, reply_markup=get_answer_buttons(message))
 
 	if message.content_type == "video":
-		bot.send_video(config.ADMIN_CHAT, get_file(message), message.caption, reply_markup=get_answer_buttons(message))
+		bot.send_video(config.ADMIN_CHAT, get_file(message, "video"), message.caption, reply_markup=get_answer_buttons(message))
 
 	if message.content_type == "document":
-		bot.send_document(config.ADMIN_CHAT, get_file(message), message.caption, reply_markup=get_answer_buttons(message))
+		bot.send_document(config.ADMIN_CHAT, get_file(message, "document"), message.caption, reply_markup=get_answer_buttons(message))
 
 	if message.content_type == "text":
 		bot.send_message(config.ADMIN_CHAT, message.text, reply_markup=get_answer_buttons(message))
@@ -51,19 +58,19 @@ def admin_logic(message):
 		states["waiting_for_answer"] = False
 		chat = states["answer_chat_id"]
 		if message.content_type == "photo":
-			bot.send_photo(chat, get_file(message), message.caption)
+			bot.send_photo(chat, get_file(message, "photo"), message.caption)
 			bot.send_message(config.ADMIN_CHAT, f"Sent message to {chat}:")
-			bot.send_photo(config.ADMIN_CHAT, get_file(message), message.caption)
+			bot.send_photo(config.ADMIN_CHAT, get_file(message, "photo"), message.caption)
 
 		if message.content_type == "video":
-			bot.send_video(chat, get_file(message), message.caption)
+			bot.send_video(chat, get_file(message, "video"), message.caption)
 			bot.send_message(config.ADMIN_CHAT, f"Sent message to {chat}:")
-			bot.send_video(config.ADMIN_CHAT, get_file(message), message.caption)
+			bot.send_video(config.ADMIN_CHAT, get_file(message, "video"), message.caption)
 
 		if message.content_type == "document":
-			bot.send_document(chat, get_file(message), message.caption)
+			bot.send_document(chat, get_file(message, "document"), message.caption)
 			bot.send_message(config.ADMIN_CHAT, f"Sent message to {chat}:")
-			bot.send_document(config.ADMIN_CHAT, get_file(message), message.caption)
+			bot.send_document(config.ADMIN_CHAT, get_file(message, "document"), message.caption)
 
 		if message.content_type == "text":
 			bot.send_message(chat, message.text)
